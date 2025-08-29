@@ -11,10 +11,26 @@
                 @input="() => validateName(false)" v-model="formData.username">
             </div>
             <div class="col-md-6">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" v-model="formData.gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" minlength="4" maxlength="10"
                 @blur="() => validatePassword(true)" @input="() => validatePassword(false)" v-model="formData.password">
               <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+            </div>
+            <div class="col-md-6">
+              <label for="password" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm-password" @blur="() => validateConfirmPassword(true)" v-model="formData.confirmPassword" />
+              <div v-if="errors.confirmPassword" class="text-danger">
+                {{ errors.confirmPassword }}
+              </div>
+
             </div>
           </div>
           <div class="row mb-3">
@@ -24,14 +40,7 @@
                 <label class="form-check-label" for="isAustralian">Australian Resident?</label>
               </div>
             </div>
-            <div class="col-md-6">
-              <label for="gender" class="form-label">Gender</label>
-              <select class="form-select" id="gender" v-model="formData.gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+
           </div>
           <div class="mb-3">
             <label for="reason" class="form-label">Reason for joining</label>
@@ -44,7 +53,7 @@
         </form>
         <div class="row mt-5" v-if="submittedCards.length">
           <div class="d-flex flex-wrap justify-content-start">
-            <!-- <div v-for="(card, index) in submittedCards" :key="index" class="card m-2" style="width: 18rem;">
+            <div v-for="(card, index) in submittedCards" :key="index" class="card m-2" style="width: 18rem;">
               <div class="card-header">
                 User Information
               </div>
@@ -55,14 +64,9 @@
                 <li class="list-group-item">Gender: {{ card.gender }}</li>
                 <li class="list-group-item">Reason: {{ card.reason }}</li>
               </ul>
-            </div> -->
+            </div>
 
-            <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
-              <Column field="password" header="Password"></Column>
-              <Column field="isAustralian" header="Australian Resident"></Column>
-              <Column field="gender" header="Gender"></Column>
-              <Column field="reason" header="Reason"></Column>
-            </DataTable>
+
           </div>
         </div>
 
@@ -77,6 +81,7 @@ import { ref } from 'vue';
 const formData = ref({
   username: '',
   password: '',
+  confirmPassword: '',
   isAustralian: false,
   reason: '',
   gender: ''
@@ -84,6 +89,7 @@ const formData = ref({
 const errors = ref({
   username: null,
   password: null,
+  confirmPassword: null,
   isAustralian: null,
   reason: null,
   gender: null
@@ -99,7 +105,7 @@ const validateName = (blur) => {
 
 const submittedCards = ref([]);
 
-const clearForm = () =>{
+const clearForm = () => {
   formData.value = {
     username: '',
     password: '',
@@ -110,18 +116,23 @@ const clearForm = () =>{
 }
 
 const submitForm = () => {
-validateName(true);
-if(!errors.value.username && !errors.value.password) 
-{
-}
-for(let i = 0; i < 5; i ++)
-{
+  validateName(true);
+  if (errors.value.username || errors.value.password) {
+    return;
+  }
   submittedCards.value.push({
     ...formData.value
   });
   clearForm();
-}
 };
+
+const validateConfirmPassword = (blur) => {
+  if (formData.value.password !== formData.value.confirmPassword) {
+    if (blur) errors.value.confirmPassword = 'Passwords do not match.'
+  } else {
+    errors.value.confirmPassword = null
+  }
+}
 
 const validatePassword = (blur) => {
   const password = formData.value.password;
