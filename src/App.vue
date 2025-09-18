@@ -1,6 +1,7 @@
 <script setup>
 import BHeader from './components/BHeader.vue';
-import MyForm from './MyForm.vue';
+// eslint-disable-next-line no-unused-vars
+import db from './firebase/init.js'
 </script>
 
 <template>
