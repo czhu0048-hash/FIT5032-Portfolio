@@ -29,12 +29,32 @@
             </div>
         </form>
     </div>
+
+    <div class="container">
+        <form @submit.prevent="updateBook">
+            <div class="main-box">
+                <div>
+                    <label for="isbnQuery">ISBN to Update:</label>
+                    <input type="text" v-model="isbnQuery" id="isbnQuery" required />
+                </div>
+                <div>
+                    <label for="nameNew">New Name:</label>
+                    <input type="text" v-model="nameNew" id="nameNew" required />
+                </div>
+                <button type="submit">Update Book</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container">
+      <BookList/>
+    </div>
 </template>
 
 <script>
 import { ref } from 'vue';
 import db from '../firebase/init.js';
-import { collection, addDoc, deleteDoc, doc, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import BookList from '../components/BookList.vue';
 
 export default {
@@ -42,6 +62,8 @@ export default {
         const isbnAdd = ref('');
         const nameAdd = ref('');
         const isbnDelete = ref('');
+        const isbnQuery = ref('');
+        const nameNew = ref('');
 
         const addBook = async () => {
             try {
@@ -69,21 +91,21 @@ export default {
                     alert('ISBN must be a valid number');
                     return;
                 }
-                
+
                 // Query for documents with matching ISBN
                 const q = query(collection(db, "books"), where("isbn", "==", isbnNumber));
                 const querySnapshot = await getDocs(q);
-                
+
                 if (querySnapshot.empty) {
                     alert('No book found with that ISBN');
                     return;
                 }
-                
+
                 // Delete all matching documents
                 querySnapshot.forEach(async (document) => {
                     await deleteDoc(doc(db, "books", document.id));
                 });
-                
+
                 isbnDelete.value = '';
                 alert("Book deleted successfully!")
             } catch (e) {
@@ -91,12 +113,53 @@ export default {
             }
         }
 
+        const updateBook = async () => {
+            try {
+                const isbnNumber = Number(isbnQuery.value);
+                if (isNaN(isbnNumber)) {
+                    alert('ISBN must be a valid number');
+                    return;
+                }
+
+              if (!nameNew.value.trim()) {
+                alert('New book name is required');
+                return;
+              }
+
+                // Query for documents with matching ISBN
+                const q = query(collection(db, "books"), where("isbn", "==", isbnNumber));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    alert('No book found with that ISBN');
+                    return;
+                }
+
+                // Delete all matching documents
+              querySnapshot.forEach(async (document) => {
+                await updateDoc(doc(db, "books", document.id), {
+                  name: nameNew.value
+                });
+              });
+
+              isbnQuery.value = '';
+              nameNew.value = '';
+              alert("Book updated successfully!")
+
+            } catch (e) {
+              console.error(`Error while trying to update book: ${e}`)
+            }
+        }
+
         return {
             isbnAdd,
             nameAdd,
-            isbnDelete, 
+            isbnDelete,
+            isbnQuery,
+            nameNew,
             addBook,
             deleteBook,
+            updateBook
         };
     },
     components: {

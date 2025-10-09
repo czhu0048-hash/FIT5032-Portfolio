@@ -14,6 +14,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { ref } from 'vue';
 import db from '../firebase/init';
 import { onMounted } from 'vue';
+
 export default{
     setup(){
         const books = ref([]);
@@ -23,15 +24,15 @@ export default{
                 const q = query(collection(db,'books'), where('isbn', '>', 1000));
                 const querySnapshot = await getDocs(q);
                 const booksArray = [];
-                querySnapshot.array.forEach((doc) => {
-                    booksArray.push({id: doc.id, ...doc.data});
+                querySnapshot.forEach((doc) => {
+                    booksArray.push({id: doc.id, ...doc.data()});
                 });
                 books.value = booksArray;
             }catch(e){
                 console.error(`Error fetching books: ${e}`)
             }
         };
-        
+
         onMounted(()=>{
             fetchBooks();
         })
