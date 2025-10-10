@@ -72,9 +72,10 @@ export default {
                     alert('ISBN must be a valid number');
                     return;
                 }
+                const capitalizedName = nameAdd.value.toUpperCase();
                 await addDoc(collection(db, 'books'), {
                     isbn: isbnNumber,
-                    name: nameAdd.value
+                    name: capitalizedName
                 });
                 isbnAdd.value = '';
                 nameAdd.value = '';
