@@ -1,9 +1,9 @@
 import { setGlobalOptions } from "firebase-functions";
 import { onRequest } from "firebase-functions/https";
 import admin from 'firebase-admin';
-import cors from 'cors';
+// import cors from 'cors';
 
-const corsHandler = cors({origin: true});
+// const corsHandler = cors({origin: true});
 
 admin.initializeApp();
 
