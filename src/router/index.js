@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import FirebaseSignView from '@/views/FirebaseSignView.vue'
 import AboutView from '../views/AboutView.vue'
 import AddBookView from '../views/AddBookView.vue'
@@ -8,7 +8,7 @@ import CountBookAPI from '@/views/CountBookAPI.vue'
 import GetAllBookAPI from '@/views/GetAllBookAPI.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {path: '/FireLogin', nmae:'FireLogin', component: FirebaseSignView},
     {path:'/about', name:'About', component:AboutView},
@@ -21,4 +21,3 @@ const router = createRouter({
 })
 
 export default router
- 
